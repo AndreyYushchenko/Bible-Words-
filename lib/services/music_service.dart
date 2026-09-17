@@ -24,7 +24,7 @@ class MusicService {
         _initialized = true;
       }
       if (_player.state != PlayerState.playing) {
-        await _player.play(AssetSource('bg_music.wav'), volume: 0.2); // Фонова музика має бути тихою
+        await _player.play(AssetSource('bg_music.mp3'), volume: 0.2); // Фонова музика має бути тихою
       }
     } catch (_) {
       // Ігноруємо помилки аудіо

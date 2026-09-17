@@ -13,9 +13,9 @@ class AchievementCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final unlocked = progress >= achievement.target;
     final images = [
-      'assets/images/bg_splash.jpg',
-      'assets/images/bg_gameplay.jpg',
-      'assets/images/bg_landscape.jpg',
+      'assets/images/bg_card_scroll.jpg',
+      'assets/images/bg_card_olive.jpg',
+      'assets/images/bg_card_tablets.jpg',
     ];
     // Використовуємо довжину назви, щоб різні картки мали різні фони, 
     // але одна й та сама картка завжди мала однаковий фон

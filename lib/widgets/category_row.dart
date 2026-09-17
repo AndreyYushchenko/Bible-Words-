@@ -13,9 +13,9 @@ class CategoryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final locked = !category.unlocked;
     final images = [
-      'assets/images/bg_splash.jpg',
-      'assets/images/bg_gameplay.jpg',
-      'assets/images/bg_landscape.jpg',
+      'assets/images/bg_card_scroll.jpg',
+      'assets/images/bg_card_olive.jpg',
+      'assets/images/bg_card_tablets.jpg',
     ];
     final bgImage = images[category.name.length % images.length];
 
