@@ -18,7 +18,6 @@ class LetterWheel extends StatelessWidget {
     required this.onDragPositionChanged,
     required this.onSubmit,
     required this.onShuffle,
-    required this.onClear,
     this.diameter = 250,
   });
 
@@ -34,7 +33,6 @@ class LetterWheel extends StatelessWidget {
   final ValueChanged<Offset?> onDragPositionChanged;
   final VoidCallback onSubmit;
   final VoidCallback onShuffle;
-  final VoidCallback onClear;
   final double diameter;
 
   double get _orbSize => letters.length <= 6 ? 58.0 : 50.0;
@@ -99,29 +97,17 @@ class LetterWheel extends StatelessWidget {
               ),
             ),
             Center(
-              child: IgnorePointer(
+              child: GestureDetector(
+                onTap: onShuffle,
                 child: Container(
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.4), shape: BoxShape.circle),
-                  child: const Icon(Icons.backspace_outlined, size: 20, color: Colors.white),
+                  child: const Icon(Icons.shuffle_rounded, size: 22, color: Colors.white),
                 ),
               ),
             ),
             for (var i = 0; i < letters.length; i++) _orb(i),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: GestureDetector(
-                onTap: onShuffle,
-                child: Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.35), shape: BoxShape.circle),
-                  child: const Icon(Icons.shuffle_rounded, size: 18, color: Colors.white),
-                ),
-              ),
-            ),
           ],
         ),
       ),

@@ -130,7 +130,6 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
       onDragPositionChanged: (_) {},
       onSubmit: () {},
       onShuffle: () {},
-      onClear: () {},
     );
     final grid = CrosswordGrid(
       gridKey: _gridKey,
@@ -389,6 +388,107 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
     );
   }
 
+  void _openDictionary() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          decoration: const BoxDecoration(
+            color: AppColors.cream,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Словник', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.pop(sheetContext),
+                    padding: EdgeInsets.zero,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Цікаві слова, які ти склав із цих літер',
+                style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _bonusFound
+                    .map(
+                      (w) => Chip(
+                        label: Text(w, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                        backgroundColor: Colors.white,
+                        avatar: const Icon(Icons.star_rounded, size: 16, color: AppColors.goldDark),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _bottomActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onTap,
+    String? badge,
+  }) {
+    final disabled = onTap == null;
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: disabled ? Colors.white.withValues(alpha: 0.5) : Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: disabled ? AppColors.lockedIcon : AppColors.goldDark, size: 22),
+              ),
+              if (badge != null)
+                Positioned(
+                  right: -3,
+                  top: -3,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: const BoxDecoration(color: AppColors.goldDark, shape: BoxShape.circle),
+                    child: Center(
+                      child: Text(
+                        badge,
+                        style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(label, style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final player = context.watch<PlayerProvider>();
@@ -491,88 +591,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                     cellSize: 46,
                   ),
 
-                  if (_bonusFound.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      children: _bonusFound
-                          .map(
-                            (w) => Chip(
-                              label: Text(
-                                w,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              backgroundColor: Colors.white,
-                              visualDensity: VisualDensity.compact,
-                              avatar: const Icon(
-                                Icons.star_rounded,
-                                size: 14,
-                                color: AppColors.goldDark,
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ],
-
-                  const SizedBox(height: 16),
-
-                  // Кнопка підказки
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: _openHints,
-                        child: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              const Center(
-                                child: Icon(
-                                  Icons.lightbulb_outline_rounded,
-                                  color: AppColors.goldDark,
-                                  size: 22,
-                                ),
-                              ),
-                              Positioned(
-                                right: -3,
-                                top: -3,
-                                child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.goldDark,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '${_remainingWords.length}',
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
                   // Колесо літер
                   AnimatedBuilder(
@@ -592,11 +611,30 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                       onDragPositionChanged: _onDragPositionChanged,
                       onSubmit: _onSubmit,
                       onShuffle: _shuffle,
-                      onClear: () => setState(() => _selected.clear()),
                       diameter: 280,
                     ),
                   ),
                   const SizedBox(height: 20),
+
+                  // Підказка + Словник знайдених бонусних слів
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _bottomActionButton(
+                        icon: Icons.lightbulb_outline_rounded,
+                        label: 'Підказка',
+                        badge: '${_remainingWords.length}',
+                        onTap: _openHints,
+                      ),
+                      const SizedBox(width: 16),
+                      _bottomActionButton(
+                        icon: Icons.menu_book_rounded,
+                        label: 'Словник',
+                        badge: _bonusFound.isEmpty ? null : '${_bonusFound.length}',
+                        onTap: _bonusFound.isEmpty ? null : _openDictionary,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
