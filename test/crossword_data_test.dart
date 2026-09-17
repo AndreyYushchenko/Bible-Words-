@@ -43,4 +43,17 @@ void main() {
       }
     }
   });
+
+  test('bonus words never duplicate an actual crossword answer in the same level', () {
+    for (final level in namesLevels) {
+      final answers = level.words.map((w) => w.answer).toSet();
+      for (final bonus in level.bonusWords) {
+        expect(
+          answers.contains(bonus),
+          isFalse,
+          reason: '${level.id}: bonus word "$bonus" is also one of the crossword answers',
+        );
+      }
+    }
+  });
 }
