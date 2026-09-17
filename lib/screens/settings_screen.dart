@@ -103,14 +103,6 @@ class SettingsScreen extends StatelessWidget {
               onChanged: player.toggleSound,
             ),
           ),
-          row(
-            leadingIcon: Icons.music_note_rounded,
-            label: 'Музика',
-            trailing: Switch(
-              value: player.musicOn,
-              onChanged: player.toggleMusic,
-            ),
-          ),
           arrowRow(
             leadingIcon: Icons.wb_sunny_rounded,
             label: 'Тема',

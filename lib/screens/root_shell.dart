@@ -25,7 +25,7 @@ class _RootShellState extends State<RootShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _index, children: _screens),
+      body: _screens[_index],
       bottomNavigationBar: AppBottomNavBar(currentIndex: _index, onTap: (i) => setState(() => _index = i)),
     );
   }

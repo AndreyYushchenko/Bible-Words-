@@ -6,7 +6,6 @@ class PlayerProfileData {
     this.wordsFound = 28,
     this.levelsCompleted = 12,
     this.soundOn = true,
-    this.musicOn = true,
     this.levelStars = const {},
     this.dailyChallengeDone = const {},
   });
@@ -17,7 +16,6 @@ class PlayerProfileData {
   final int wordsFound;
   final int levelsCompleted;
   final bool soundOn;
-  final bool musicOn;
 
   /// levelId -> stars (1-3)
   final Map<String, int> levelStars;
@@ -32,7 +30,6 @@ class PlayerProfileData {
     int? wordsFound,
     int? levelsCompleted,
     bool? soundOn,
-    bool? musicOn,
     Map<String, int>? levelStars,
     Map<int, bool>? dailyChallengeDone,
   }) {
@@ -43,7 +40,6 @@ class PlayerProfileData {
       wordsFound: wordsFound ?? this.wordsFound,
       levelsCompleted: levelsCompleted ?? this.levelsCompleted,
       soundOn: soundOn ?? this.soundOn,
-      musicOn: musicOn ?? this.musicOn,
       levelStars: levelStars ?? this.levelStars,
       dailyChallengeDone: dailyChallengeDone ?? this.dailyChallengeDone,
     );
@@ -56,7 +52,6 @@ class PlayerProfileData {
         'wordsFound': wordsFound,
         'levelsCompleted': levelsCompleted,
         'soundOn': soundOn,
-        'musicOn': musicOn,
         'levelStars': levelStars,
         'dailyChallengeDone': dailyChallengeDone.map((k, v) => MapEntry(k.toString(), v)),
       };
@@ -69,7 +64,6 @@ class PlayerProfileData {
       wordsFound: json['wordsFound'] as int? ?? 28,
       levelsCompleted: json['levelsCompleted'] as int? ?? 12,
       soundOn: json['soundOn'] as bool? ?? true,
-      musicOn: json['musicOn'] as bool? ?? true,
       levelStars: (json['levelStars'] as Map<String, dynamic>?)?.map((k, v) => MapEntry(k, v as int)) ?? const {},
       dailyChallengeDone: (json['dailyChallengeDone'] as Map<String, dynamic>?)
               ?.map((k, v) => MapEntry(int.parse(k), v as bool)) ??

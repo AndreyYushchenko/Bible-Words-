@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'services/music_service.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/achievements_screen.dart';
 import 'screens/daily_challenge_screen.dart';
@@ -64,11 +63,7 @@ class _BibleWordsAppState extends State<BibleWordsApp> with WidgetsBindingObserv
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      MusicService.pause();
-    } else if (state == AppLifecycleState.resumed) {
-      MusicService.resume();
-    }
+    // Фонова музика має грати навіть коли екран вимкнений або додаток згорнутий.
   }
 
   @override

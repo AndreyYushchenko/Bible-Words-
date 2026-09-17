@@ -12,12 +12,7 @@ class CategoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locked = !category.unlocked;
-    final images = [
-      'assets/images/bg_card_scroll.jpg',
-      'assets/images/bg_card_olive.jpg',
-      'assets/images/bg_card_tablets.jpg',
-    ];
-    final bgImage = images[category.name.length % images.length];
+    final bgImage = 'assets/images/bg_cat_${category.id}.jpg';
 
     return Container(
       height: 72,
@@ -35,8 +30,8 @@ class CategoryRow extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 // Фото фон
-                Image.asset(
-                  bgImage,
+                Image(
+                  image: ResizeImage(AssetImage(bgImage), width: 800),
                   fit: BoxFit.cover,
                   color: locked ? Colors.grey : null,
                   colorBlendMode: locked ? BlendMode.saturation : null,

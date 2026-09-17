@@ -12,14 +12,8 @@ class AchievementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final unlocked = progress >= achievement.target;
-    final images = [
-      'assets/images/bg_card_scroll.jpg',
-      'assets/images/bg_card_olive.jpg',
-      'assets/images/bg_card_tablets.jpg',
-    ];
-    // Використовуємо довжину назви, щоб різні картки мали різні фони, 
-    // але одна й та сама картка завжди мала однаковий фон
-    final bgImage = images[achievement.title.length % images.length];
+    final id = achievement.id.replaceAll('-', '_');
+    final bgImage = 'assets/images/bg_ach_$id.jpg';
 
     return Container(
       height: 84,
@@ -34,8 +28,8 @@ class AchievementCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Фото фон
-            Image.asset(
-              bgImage,
+            Image(
+              image: ResizeImage(AssetImage(bgImage), width: 800),
               fit: BoxFit.cover,
               color: unlocked ? null : Colors.grey,
               colorBlendMode: unlocked ? null : BlendMode.saturation,

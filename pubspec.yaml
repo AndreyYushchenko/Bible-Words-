@@ -40,10 +40,17 @@ flutter:
     - assets/images/bg_gameplay.jpg
     - assets/images/bg_landscape.jpg
     - assets/images/app_icon_cropped.jpg
-    - assets/images/bg_card_scroll.jpg
-    - assets/images/bg_card_olive.jpg
-    - assets/images/bg_card_tablets.jpg
-    - assets/audio/bg_music.mp3
+    - assets/images/bg_cat_names.jpg
+    - assets/images/bg_cat_places.jpg
+    - assets/images/bg_cat_events.jpg
+    - assets/images/bg_cat_books.jpg
+    - assets/images/bg_cat_objects.jpg
+    - assets/images/bg_cat_words.jpg
+    - assets/images/bg_ach_first_steps.jpg
+    - assets/images/bg_ach_names_lover.jpg
+    - assets/images/bg_ach_truth_seeker.jpg
+    - assets/images/bg_ach_scripture_master.jpg
+    - assets/images/bg_ach_word_master.jpg
     - assets/sounds/tap.wav
     - assets/sounds/success.wav
     - assets/sounds/error.wav
