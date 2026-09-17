@@ -450,7 +450,9 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
     final disabled = onTap == null;
     return GestureDetector(
       onTap: onTap,
-      child: Column(
+      child: SizedBox(
+        width: 60,
+        child: Column(
         children: [
           Stack(
             clipBehavior: Clip.none,
@@ -483,8 +485,13 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
             ],
           ),
           const SizedBox(height: 6),
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600),
+          ),
         ],
+        ),
       ),
     );
   }
@@ -588,53 +595,54 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                     gridKey: _gridKey,
                     level: _level,
                     solvedWords: _solved,
-                    cellSize: 46,
+                    cellSize: 50,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
-                  // Колесо літер
-                  AnimatedBuilder(
-                    animation: _shakeController,
-                    builder: (context, child) {
-                      final t = _shakeController.value;
-                      final dx = sin(t * pi * 6) * 10 * (1 - t);
-                      return Transform.translate(offset: Offset(dx, 0), child: child);
-                    },
-                    child: LetterWheel(
-                      wheelKey: _wheelKey,
-                      letters: _wheelLetters,
-                      selected: _selected,
-                      dragPosition: _dragPosition,
-                      onLetterAdd: _onLetterAdd,
-                      onBacktrack: _onBacktrack,
-                      onDragPositionChanged: _onDragPositionChanged,
-                      onSubmit: _onSubmit,
-                      onShuffle: _shuffle,
-                      diameter: 280,
+                  // Підказка — Колесо літер — Словник
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _bottomActionButton(
+                          icon: Icons.lightbulb_outline_rounded,
+                          label: 'Підказка',
+                          badge: '${_remainingWords.length}',
+                          onTap: _openHints,
+                        ),
+                        AnimatedBuilder(
+                          animation: _shakeController,
+                          builder: (context, child) {
+                            final t = _shakeController.value;
+                            final dx = sin(t * pi * 6) * 10 * (1 - t);
+                            return Transform.translate(offset: Offset(dx, 0), child: child);
+                          },
+                          child: LetterWheel(
+                            wheelKey: _wheelKey,
+                            letters: _wheelLetters,
+                            selected: _selected,
+                            dragPosition: _dragPosition,
+                            onLetterAdd: _onLetterAdd,
+                            onBacktrack: _onBacktrack,
+                            onDragPositionChanged: _onDragPositionChanged,
+                            onSubmit: _onSubmit,
+                            onShuffle: _shuffle,
+                            diameter: 254,
+                          ),
+                        ),
+                        _bottomActionButton(
+                          icon: Icons.menu_book_rounded,
+                          label: 'Словник',
+                          badge: _bonusFound.isEmpty ? null : '${_bonusFound.length}',
+                          onTap: _bonusFound.isEmpty ? null : _openDictionary,
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Підказка + Словник знайдених бонусних слів
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _bottomActionButton(
-                        icon: Icons.lightbulb_outline_rounded,
-                        label: 'Підказка',
-                        badge: '${_remainingWords.length}',
-                        onTap: _openHints,
-                      ),
-                      const SizedBox(width: 16),
-                      _bottomActionButton(
-                        icon: Icons.menu_book_rounded,
-                        label: 'Словник',
-                        badge: _bonusFound.isEmpty ? null : '${_bonusFound.length}',
-                        onTap: _bonusFound.isEmpty ? null : _openDictionary,
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
