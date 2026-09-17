@@ -11,7 +11,6 @@ import '../widgets/crossword_grid.dart';
 import '../widgets/flying_letters.dart';
 import '../widgets/letter_wheel.dart';
 import '../widgets/particle_burst.dart';
-import '../widgets/word_bubble.dart';
 
 class GameplayScreen extends StatefulWidget {
   const GameplayScreen({super.key, required this.levelId});
@@ -22,7 +21,7 @@ class GameplayScreen extends StatefulWidget {
   State<GameplayScreen> createState() => _GameplayScreenState();
 }
 
-class _GameplayScreenState extends State<GameplayScreen> {
+class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProviderStateMixin {
   late Level _level;
   late List<String> _wheelLetters;
   final List<int> _selected = [];
@@ -34,13 +33,22 @@ class _GameplayScreenState extends State<GameplayScreen> {
 
   final GlobalKey _wheelKey = GlobalKey();
   final GlobalKey _gridKey = GlobalKey();
-  final GlobalKey<WordBubbleState> _bubbleKey = GlobalKey<WordBubbleState>();
+  late final AnimationController _shakeController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 400),
+  );
 
   @override
   void initState() {
     super.initState();
     _level = levelById(widget.levelId)!;
     _wheelLetters = List.of(_level.wheelLetters);
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
   }
 
   String get _attempt => _selected.map((i) => _wheelLetters[i]).join();
@@ -97,7 +105,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
       return;
     }
 
-    _bubbleKey.currentState?.shake();
+    _shakeController.forward(from: 0);
     setState(_selected.clear);
   }
 
@@ -416,7 +424,13 @@ class _GameplayScreenState extends State<GameplayScreen> {
                             color: Colors.white,
                             size: 28,
                           ),
-                          onPressed: () => context.pop(),
+                          onPressed: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go('/home');
+                            }
+                          },
                         ),
                         Expanded(
                           child: Column(
@@ -466,6 +480,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
                     gridKey: _gridKey,
                     level: _level,
                     solvedWords: _solved,
+                    cellSize: 36,
                   ),
 
                   if (_bonusFound.isNotEmpty) ...[
@@ -496,15 +511,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
                     ),
                   ],
 
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                    height: 52,
-                    child: Center(
-                      child: WordBubble(key: _bubbleKey, text: _attempt),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
 
                   // Кнопка підказки
                   Row(
@@ -560,19 +567,28 @@ class _GameplayScreenState extends State<GameplayScreen> {
                   const SizedBox(height: 16),
 
                   // Колесо літер
-                  LetterWheel(
-                    wheelKey: _wheelKey,
-                    letters: _wheelLetters,
-                    selected: _selected,
-                    dragPosition: _dragPosition,
-                    onLetterAdd: _onLetterAdd,
-                    onBacktrack: _onBacktrack,
-                    onDragPositionChanged: _onDragPositionChanged,
-                    onSubmit: _onSubmit,
-                    onShuffle: _shuffle,
-                    onClear: () => setState(() => _selected.clear()),
+                  AnimatedBuilder(
+                    animation: _shakeController,
+                    builder: (context, child) {
+                      final t = _shakeController.value;
+                      final dx = sin(t * pi * 6) * 10 * (1 - t);
+                      return Transform.translate(offset: Offset(dx, 0), child: child);
+                    },
+                    child: LetterWheel(
+                      wheelKey: _wheelKey,
+                      letters: _wheelLetters,
+                      selected: _selected,
+                      dragPosition: _dragPosition,
+                      onLetterAdd: _onLetterAdd,
+                      onBacktrack: _onBacktrack,
+                      onDragPositionChanged: _onDragPositionChanged,
+                      onSubmit: _onSubmit,
+                      onShuffle: _shuffle,
+                      onClear: () => setState(() => _selected.clear()),
+                      diameter: 220,
+                    ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

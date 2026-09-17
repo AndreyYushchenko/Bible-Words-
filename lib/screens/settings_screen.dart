@@ -81,7 +81,13 @@ class SettingsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left_rounded, size: 28),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
         ),
         title: const Text('Налаштування', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
         centerTitle: true,

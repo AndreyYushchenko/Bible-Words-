@@ -63,7 +63,13 @@ class LevelSelectScreen extends StatelessWidget {
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.chevron_left_rounded, size: 28, color: Colors.white),
-                          onPressed: () => context.pop(),
+                          onPressed: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go('/home');
+                            }
+                          },
                         ),
                       ),
                       Expanded(
