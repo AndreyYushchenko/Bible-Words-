@@ -2,39 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
-import '../widgets/particle_burst.dart';
 
-class LevelCompleteScreen extends StatefulWidget {
+class LevelCompleteScreen extends StatelessWidget {
   const LevelCompleteScreen({super.key, required this.categoryId, required this.stars});
 
   final String categoryId;
   final int stars;
-
-  @override
-  State<LevelCompleteScreen> createState() => _LevelCompleteScreenState();
-}
-
-class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _burst());
-  }
-
-  void _burst() {
-    if (!mounted) return;
-    final size = MediaQuery.sizeOf(context);
-    final origin = Offset(size.width / 2, size.height * 0.28);
-    for (var i = 0; i < widget.stars; i++) {
-      Future.delayed(Duration(milliseconds: i * 150), () {
-        if (!mounted) return;
-        ParticleBurst.show(context, origin + Offset((i - 1) * 44, 0), color: AppColors.goldMid, count: 16);
-      });
-    }
-  }
-
-  String get categoryId => widget.categoryId;
-  int get stars => widget.stars;
 
   @override
   Widget build(BuildContext context) {
@@ -42,28 +15,27 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Темний фон з градієнтом
+          // Реальне фото фону (пейзаж з руїнами)
+          Image.asset(
+            'assets/images/bg_landscape.jpg',
+            fit: BoxFit.cover,
+          ),
+          // Легке накладення зверху для читабельності
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFFE8D5A8),
-                  Color(0xFFD4BA84),
-                  Color(0xFFC4A870),
+                  Color(0xBBFAF3E0),
+                  Color(0x44FAF3E0),
+                  Color(0x22FAF3E0),
+                  Color(0x44FAF3E0),
+                  Color(0xCCFAF3E0),
                 ],
-                stops: [0.0, 0.5, 1.0],
+                stops: [0.0, 0.2, 0.5, 0.7, 1.0],
               ),
             ),
-          ),
-          // Фоновий пейзаж
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 300,
-            child: CustomPaint(painter: _CompleteBgPainter()),
           ),
           // Контент
           SafeArea(
@@ -71,7 +43,7 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
                   // Заголовок
                   Text(
                     'Рівень пройдено!',
@@ -88,24 +60,28 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: Icon(
                           Icons.star_rounded,
-                          size: 44,
-                          color: filled ? AppColors.goldMid : Colors.white38,
+                          size: 46,
+                          color: filled ? const Color(0xFFFFCC00) : Colors.white38,
                         ),
                       );
                     }),
                   ),
                   const SizedBox(height: 24),
-                  // Цитата
+                  // Цитата — біла картка
                   Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.85),
+                      color: Colors.white.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(18),
+                      boxShadow: const [
+                        BoxShadow(color: Color(0x20000000), blurRadius: 16, offset: Offset(0, 4)),
+                      ],
                     ),
                     child: Column(
                       children: [
                         const Text(
-                          '«Добрий подвиг я подвизав, віру зберіг…»',
+                          '«Добрий подвиг я подвизав,\nвіру зберіг…»',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: AppColors.textDark,
@@ -158,41 +134,16 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen> {
       decoration: BoxDecoration(
         gradient: AppColors.goldGradient,
         borderRadius: BorderRadius.circular(20),
+        boxShadow: const [BoxShadow(color: Color(0x30C08B28), blurRadius: 8, offset: Offset(0, 2))],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 15, color: const Color(0xFF241408)),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF241408), fontSize: 13),
-          ),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF241408), fontSize: 13)),
         ],
       ),
     );
   }
-}
-
-class _CompleteBgPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
-
-    paint.color = const Color(0xFFB89060).withOpacity(0.5);
-    final path = Path();
-    path.moveTo(0, size.height * 0.4);
-    path.lineTo(size.width * 0.2, size.height * 0.1);
-    path.lineTo(size.width * 0.4, size.height * 0.35);
-    path.lineTo(size.width * 0.6, size.height * 0.05);
-    path.lineTo(size.width * 0.8, size.height * 0.3);
-    path.lineTo(size.width, size.height * 0.15);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

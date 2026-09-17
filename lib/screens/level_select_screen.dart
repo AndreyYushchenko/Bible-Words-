@@ -22,43 +22,59 @@ class LevelSelectScreen extends StatelessWidget {
       backgroundColor: AppColors.cream,
       body: Stack(
         children: [
-          // Фоновий градієнт
+          // Фото вгорі
+          SizedBox(
+            height: 280,
+            width: double.infinity,
+            child: Image.asset(
+              'assets/images/bg_gameplay.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Градієнт поверх фото (fade до кремового)
           Container(
-            height: 260,
+            height: 280,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFD4C09A), Color(0xFFFAF8F2)],
+                colors: [
+                  Color(0x00000000),
+                  Color(0x55000000),
+                  Color(0xFFFAF8F2),
+                ],
+                stops: [0.0, 0.6, 1.0],
               ),
             ),
-          ),
-          // Декоративний пейзаж вгорі
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 200,
-            child: CustomPaint(painter: _LevelBgPainter()),
           ),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // AppBar
+                // AppBar поверх фото
                 Padding(
                   padding: const EdgeInsets.fromLTRB(4, 4, 16, 0),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.chevron_left_rounded, size: 28),
-                        color: AppColors.textDark,
-                        onPressed: () => context.pop(),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.chevron_left_rounded, size: 28, color: Colors.white),
+                          onPressed: () => context.pop(),
+                        ),
                       ),
                       Expanded(
                         child: Text(
                           category.name,
-                          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            shadows: [Shadow(color: Colors.black45, blurRadius: 6)],
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -66,7 +82,7 @@ class LevelSelectScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 130),
                 // Заголовок і цитата
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -77,12 +93,17 @@ class LevelSelectScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       const Text(
                         '«Пізнавайте Його через імена, які змінили історію»',
-                        style: TextStyle(fontStyle: FontStyle.italic, fontSize: 13, color: AppColors.textMuted, height: 1.4),
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontSize: 13,
+                          color: AppColors.textMuted,
+                          height: 1.4,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 // Сітка рівнів
                 Expanded(
                   child: GridView.builder(
@@ -97,15 +118,19 @@ class LevelSelectScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final number = index + 1;
                       final level = index < levels.length ? levels[index] : null;
-                      final unlocked = level != null && (index == 0 || player.starsFor(levels[index - 1].id) > 0);
+                      final unlocked = level != null &&
+                          (index == 0 || player.starsFor(levels[index - 1].id) > 0);
                       final stars = level != null ? player.starsFor(level.id) : 0;
-                      final isCurrentLevel = unlocked && stars == 0 && (index == 0 || player.starsFor(levels[index - 1].id) > 0);
+                      final isCurrentLevel =
+                          unlocked && stars == 0 && (index == 0 || player.starsFor(levels[index - 1].id) > 0);
                       return LevelCell(
                         number: number,
                         stars: stars,
                         locked: !unlocked,
                         selected: isCurrentLevel,
-                        onTap: level == null ? null : () => context.push('/category/$categoryId/level/${level.id}'),
+                        onTap: level == null
+                            ? null
+                            : () => context.push('/category/$categoryId/level/${level.id}'),
                       );
                     },
                   ),
@@ -117,31 +142,4 @@ class LevelSelectScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class _LevelBgPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
-
-    // Силуети колон і міста
-    paint.color = const Color(0xFFC4A870).withOpacity(0.4);
-    final path = Path();
-    path.moveTo(0, size.height);
-    path.lineTo(0, size.height * 0.5);
-    path.lineTo(size.width * 0.1, size.height * 0.2);
-    path.lineTo(size.width * 0.2, size.height * 0.5);
-    path.lineTo(size.width * 0.35, size.height * 0.3);
-    path.lineTo(size.width * 0.5, size.height * 0.6);
-    path.lineTo(size.width * 0.65, size.height * 0.25);
-    path.lineTo(size.width * 0.8, size.height * 0.5);
-    path.lineTo(size.width * 0.9, size.height * 0.15);
-    path.lineTo(size.width, size.height * 0.4);
-    path.lineTo(size.width, size.height);
-    path.close();
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

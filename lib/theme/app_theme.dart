@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   static const cream = Color(0xFFFAF8F2);
@@ -19,31 +18,22 @@ class AppColors {
   static const lockedIcon = Color(0xFFABA694);
   static const border = Color(0x18000000);
 
-  // Золотий градієнт кнопок та іконок
   static const goldGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [goldLight, goldDark],
   );
 
-  // Зелений градієнт (для активних елементів)
   static const greenGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [green, greenDark],
   );
-
-  // Фоновий градієнт для темних екранів (gameplay, splash)
-  static const skyGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFD4B896), Color(0xFFB89B72)],
-  );
 }
 
 class AppTheme {
   static ThemeData light() {
-    final base = ThemeData(
+    return ThemeData(
       useMaterial3: true,
       scaffoldBackgroundColor: AppColors.cream,
       colorScheme: ColorScheme.fromSeed(
@@ -51,17 +41,22 @@ class AppTheme {
         brightness: Brightness.light,
         surface: AppColors.cream,
       ),
-    );
-    return base.copyWith(
-      textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
-        bodyColor: AppColors.textDark,
-        displayColor: AppColors.textDark,
+      fontFamily: 'Inter',
+      textTheme: const TextTheme(
+        bodySmall: TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textDark),
+        bodyMedium: TextStyle(fontFamily: 'Inter', fontSize: 14, color: AppColors.textDark),
+        bodyLarge: TextStyle(fontFamily: 'Inter', fontSize: 16, color: AppColors.textDark),
+        labelSmall: TextStyle(fontFamily: 'Inter', fontSize: 10, color: AppColors.textMuted),
+        labelMedium: TextStyle(fontFamily: 'Inter', fontSize: 12, color: AppColors.textMuted),
+        titleMedium: TextStyle(fontFamily: 'Inter', fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textDark),
+        titleLarge: TextStyle(fontFamily: 'Inter', fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textDark),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.cream,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppColors.textDark,
+        titleTextStyle: TextStyle(fontFamily: 'Inter', fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.textDark),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((s) {
@@ -77,7 +72,14 @@ class AppTheme {
     );
   }
 
+  /// Cinzel display font — використовується для заголовків
   static TextStyle display({double size = 24, FontWeight weight = FontWeight.w700, Color? color}) {
-    return GoogleFonts.cinzel(fontSize: size, fontWeight: weight, color: color ?? AppColors.textDark);
+    return TextStyle(
+      fontFamily: 'Cinzel',
+      fontSize: size,
+      fontWeight: weight,
+      color: color ?? AppColors.textDark,
+      letterSpacing: 0.5,
+    );
   }
 }

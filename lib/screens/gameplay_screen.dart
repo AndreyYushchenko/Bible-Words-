@@ -382,29 +382,23 @@ class _GameplayScreenState extends State<GameplayScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Фоновий градієнт
+          // Реальне фото фону
+          Image.asset(
+            'assets/images/bg_gameplay.jpg',
+            fit: BoxFit.cover,
+          ),
+          // Темне накладення для читабельності
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF3E362A),
-                  Color(0xFF2A2018),
-                  Color(0xFF1E170F),
+                  Color(0xCC1E1408),
+                  Color(0x991E1408),
+                  Color(0xDD1E1408),
                 ],
               ),
-            ),
-          ),
-          // Верхній пейзаж
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 200,
-            child: Opacity(
-              opacity: 0.25,
-              child: CustomPaint(painter: _GameBgPainter()),
             ),
           ),
           SafeArea(

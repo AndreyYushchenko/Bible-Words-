@@ -34,13 +34,17 @@ class ProfileScreen extends StatelessWidget {
           // Аватар і ім'я
           Center(
             child: Container(
-              width: 72,
-              height: 72,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: const Color(0xFFE8DFC8),
-                borderRadius: BorderRadius.circular(36),
+                borderRadius: BorderRadius.circular(40),
+                border: Border.all(color: AppColors.goldLight, width: 3),
+                boxShadow: const [BoxShadow(color: Color(0x30000000), blurRadius: 12, offset: Offset(0, 4))],
               ),
-              child: const Icon(Icons.castle_rounded, size: 34, color: Color(0xFF8B7A3E)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(38),
+                child: Image.asset('assets/images/bg_splash.jpg', fit: BoxFit.cover),
+              ),
             ),
           ),
           const SizedBox(height: 12),

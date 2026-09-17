@@ -95,7 +95,7 @@ class LetterWheel extends StatelessWidget {
             Container(decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.28), shape: BoxShape.circle)),
             Positioned.fill(
               child: IgnorePointer(
-                child: CustomPaint(painter: WordTrailPainter(points: trailPoints, color: AppColors.green)),
+                child: CustomPaint(painter: WordTrailPainter(points: trailPoints, color: AppColors.goldMid)),
               ),
             ),
             Center(
@@ -138,15 +138,20 @@ class LetterWheel extends StatelessWidget {
       child: IgnorePointer(
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 120),
-          width: isSelected ? _orbSize * 1.08 : _orbSize,
-          height: isSelected ? _orbSize * 1.08 : _orbSize,
+          curve: Curves.easeOut,
+          width: isSelected ? _orbSize * 1.12 : _orbSize,
+          height: isSelected ? _orbSize * 1.12 : _orbSize,
           decoration: BoxDecoration(
-            gradient: isSelected ? AppColors.greenGradient : AppColors.goldGradient,
+            gradient: isSelected
+                ? const LinearGradient(colors: [Color(0xFFFFF3D6), Color(0xFFF0C878)])
+                : AppColors.goldGradient,
             shape: BoxShape.circle,
+            border: isSelected ? Border.all(color: Colors.white, width: 2.5) : null,
             boxShadow: [
               BoxShadow(
-                color: isSelected ? const Color(0x403A9068) : const Color(0x40C08B28),
-                blurRadius: 8,
+                color: isSelected ? const Color(0x80F0C878) : const Color(0x40C08B28),
+                blurRadius: isSelected ? 16 : 8,
+                spreadRadius: isSelected ? 1 : 0,
                 offset: const Offset(0, 3),
               ),
             ],
@@ -157,7 +162,7 @@ class LetterWheel extends StatelessWidget {
               style: TextStyle(
                 fontSize: _orbSize > 52 ? 22 : 19,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? Colors.white : const Color(0xFF241408),
+                color: const Color(0xFF241408),
               ),
             ),
           ),
