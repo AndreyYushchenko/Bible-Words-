@@ -12,42 +12,76 @@ class AchievementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final unlocked = progress >= achievement.target;
+    final images = [
+      'assets/images/bg_splash.jpg',
+      'assets/images/bg_gameplay.jpg',
+      'assets/images/bg_landscape.jpg',
+    ];
+    // Використовуємо довжину назви, щоб різні картки мали різні фони, 
+    // але одна й та сама картка завжди мала однаковий фон
+    final bgImage = images[achievement.title.length % images.length];
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      height: 84,
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 6, offset: Offset(0, 2))],
+        boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 8, offset: Offset(0, 4))],
       ),
-      child: Row(
-        children: [
-          _HexBadge(icon: achievement.icon, unlocked: unlocked),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  achievement.title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: unlocked ? AppColors.textDark : AppColors.lockedIcon,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  achievement.subtitle,
-                  style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
-                ),
-              ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Фото фон
+            Image.asset(
+              bgImage,
+              fit: BoxFit.cover,
+              color: unlocked ? null : Colors.grey,
+              colorBlendMode: unlocked ? null : BlendMode.saturation,
             ),
-          ),
-          if (!unlocked)
-            const Icon(Icons.lock_rounded, size: 18, color: AppColors.lockedIcon),
-        ],
+            // Темне накладення
+            Container(
+              color: unlocked ? const Color(0x991E1A14) : const Color(0xD91E1A14),
+            ),
+            // Контент
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _HexBadge(icon: achievement.icon, unlocked: unlocked),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          achievement.title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: unlocked ? Colors.white : Colors.white54,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          achievement.subtitle,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: unlocked ? Colors.white70 : Colors.white38,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (!unlocked)
+                    const Icon(Icons.lock_rounded, size: 20, color: Colors.white38),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

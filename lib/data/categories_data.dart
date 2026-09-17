@@ -31,7 +31,8 @@ final List<Level> namesLevels = [
       PuzzleWord(answer: 'ДАВИД', row: 0, col: 2, direction: WordDirection.vertical),
       PuzzleWord(answer: 'САУЛ', row: 1, col: 1, direction: WordDirection.horizontal),
     ],
-    wheelLetters: const ['Д', 'А', 'В', 'И', 'С', 'У', 'Л'],
+    // ДАВИД needs two "Д" tiles (first and last letter) — one wasn't enough to spell it.
+    wheelLetters: const ['Д', 'А', 'В', 'И', 'С', 'У', 'Л', 'Д'],
     bonusWords: const ['САД', 'ВАЛ', 'УДАВ'],
   ),
   Level(

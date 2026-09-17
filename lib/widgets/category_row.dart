@@ -12,65 +12,94 @@ class CategoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locked = !category.unlocked;
-    return Material(
-      color: AppColors.card,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
+    final images = [
+      'assets/images/bg_splash.jpg',
+      'assets/images/bg_gameplay.jpg',
+      'assets/images/bg_landscape.jpg',
+    ];
+    final bgImage = images[category.name.length % images.length];
+
+    return Container(
+      height: 72,
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          height: 72,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
-            boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
-          ),
-          child: Row(
-            children: [
-              // Іконка категорії
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  gradient: locked ? null : AppColors.goldGradient,
-                  color: locked ? AppColors.lockedBg : null,
-                  borderRadius: BorderRadius.circular(13),
+        boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 8, offset: Offset(0, 4))],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Material(
+          child: InkWell(
+            onTap: onTap,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Фото фон
+                Image.asset(
+                  bgImage,
+                  fit: BoxFit.cover,
+                  color: locked ? Colors.grey : null,
+                  colorBlendMode: locked ? BlendMode.saturation : null,
                 ),
-                child: Icon(
-                  category.icon,
-                  size: 22,
-                  color: locked ? AppColors.lockedIcon : const Color(0xFF241408),
+                // Темне накладення
+                Container(
+                  color: locked ? const Color(0xD91E1A14) : const Color(0x991E1A14),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      category.name,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
+                // Контент
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: [
+                      // Іконка
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: locked ? null : AppColors.goldGradient,
+                          color: locked ? Colors.white.withOpacity(0.1) : null,
+                          borderRadius: BorderRadius.circular(13),
+                        ),
+                        child: Icon(
+                          category.icon,
+                          size: 22,
+                          color: locked ? Colors.white54 : const Color(0xFF241408),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      locked ? 'Незабаром' : progress,
-                      style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
-                    ),
-                  ],
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              category.name,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: locked ? Colors.white60 : Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              locked ? 'Незабаром' : progress,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: locked ? Colors.white38 : Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        locked ? Icons.lock_rounded : Icons.chevron_right_rounded,
+                        size: locked ? 16 : 22,
+                        color: locked ? Colors.white38 : Colors.white,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Icon(
-                locked ? Icons.lock_rounded : Icons.chevron_right_rounded,
-                size: locked ? 16 : 20,
-                color: locked ? AppColors.lockedIcon : AppColors.textMuted,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
