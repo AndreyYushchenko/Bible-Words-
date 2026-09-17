@@ -30,6 +30,7 @@ final _router = GoRouter(
               path: 'complete',
               builder: (context, state) => LevelCompleteScreen(
                 categoryId: state.pathParameters['categoryId']!,
+                levelId: state.pathParameters['levelId']!,
                 stars: state.extra as int? ?? 3,
               ),
             ),

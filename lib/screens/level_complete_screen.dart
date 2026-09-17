@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../data/categories_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_button.dart';
 
 class LevelCompleteScreen extends StatelessWidget {
-  const LevelCompleteScreen({super.key, required this.categoryId, required this.stars});
+  const LevelCompleteScreen({super.key, required this.categoryId, required this.levelId, required this.stars});
 
   final String categoryId;
+  final String levelId;
   final int stars;
+
+  String? get _nextLevelId {
+    final levels = levelsForCategory(categoryId);
+    final index = levels.indexWhere((l) => l.id == levelId);
+    if (index == -1 || index + 1 >= levels.length) return null;
+    return levels[index + 1].id;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final nextLevelId = _nextLevelId;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -111,7 +121,11 @@ class LevelCompleteScreen extends StatelessWidget {
                   // Кнопки
                   PrimaryButton(
                     label: 'Наступний рівень',
-                    onPressed: () => context.go('/category/$categoryId'),
+                    onPressed: () => context.go(
+                      nextLevelId == null
+                          ? '/category/$categoryId'
+                          : '/category/$categoryId/level/$nextLevelId',
+                    ),
                   ),
                   const SizedBox(height: 10),
                   SecondaryButton(
