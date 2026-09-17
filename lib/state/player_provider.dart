@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/player_profile.dart';
+import '../services/sound_service.dart';
 
 class PlayerProvider extends ChangeNotifier {
   PlayerProvider() {
@@ -29,6 +30,7 @@ class PlayerProvider extends ChangeNotifier {
         // Ignore corrupt local data and keep defaults.
       }
     }
+    SoundService.enabled = _data.soundOn;
   }
 
   Future<void> _save() async {
@@ -84,6 +86,9 @@ class PlayerProvider extends ChangeNotifier {
     });
   }
 
-  void toggleSound(bool value) => _update((d) => d.copyWith(soundOn: value));
+  void toggleSound(bool value) {
+    SoundService.enabled = value;
+    _update((d) => d.copyWith(soundOn: value));
+  }
   void toggleMusic(bool value) => _update((d) => d.copyWith(musicOn: value));
 }

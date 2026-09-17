@@ -11,6 +11,7 @@ import '../widgets/crossword_grid.dart';
 import '../widgets/flying_letters.dart';
 import '../widgets/letter_wheel.dart';
 import '../widgets/particle_burst.dart';
+import '../services/sound_service.dart';
 
 class GameplayScreen extends StatefulWidget {
   const GameplayScreen({super.key, required this.levelId});
@@ -58,7 +59,10 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
       .where((a) => !_solved.contains(a))
       .toList();
 
-  void _onLetterAdd(int index) => setState(() => _selected.add(index));
+  void _onLetterAdd(int index) {
+    SoundService.tap();
+    setState(() => _selected.add(index));
+  }
 
   void _onBacktrack() => setState(() => _selected.removeLast());
 
@@ -89,6 +93,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
     }
 
     if (_level.bonusWords.contains(attempt) && !_bonusFound.contains(attempt)) {
+      SoundService.wordFound();
       final player = context.read<PlayerProvider>();
       player.addCoins(3);
       setState(() {
@@ -105,6 +110,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
       return;
     }
 
+    SoundService.error();
     _shakeController.forward(from: 0);
     setState(_selected.clear);
   }
@@ -152,6 +158,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
       ends: ends,
       onDone: () {
         if (!mounted) return;
+        SoundService.wordFound();
         final player = context.read<PlayerProvider>();
         player.wordFound();
         player.addCoins(5);
@@ -177,6 +184,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
   }
 
   void _finishLevel() {
+    SoundService.levelComplete();
     final stars = _hintsUsed == 0 ? 3 : (_hintsUsed <= 2 ? 2 : 1);
     final player = context.read<PlayerProvider>();
     player.completeLevel(_level.id, stars);
