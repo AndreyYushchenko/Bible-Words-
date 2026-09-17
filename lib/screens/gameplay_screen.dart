@@ -480,7 +480,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                     gridKey: _gridKey,
                     level: _level,
                     solvedWords: _solved,
-                    cellSize: 36,
+                    cellSize: 46,
                   ),
 
                   if (_bonusFound.isNotEmpty) ...[
@@ -585,7 +585,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                       onSubmit: _onSubmit,
                       onShuffle: _shuffle,
                       onClear: () => setState(() => _selected.clear()),
-                      diameter: 220,
+                      diameter: 280,
                     ),
                   ),
                   const SizedBox(height: 20),
