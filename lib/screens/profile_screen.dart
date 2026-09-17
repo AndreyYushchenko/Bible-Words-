@@ -15,70 +15,137 @@ class ProfileScreen extends StatelessWidget {
     final pct = (progress / target * 100).clamp(0, 100).round();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Профіль', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+      backgroundColor: AppColors.cream,
+      appBar: AppBar(
+        backgroundColor: AppColors.cream,
+        elevation: 0,
+        title: const Text('Профіль', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Icon(Icons.settings_rounded, size: 22, color: AppColors.textMuted),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Аватар і ім'я
           Center(
             child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(color: const Color(0xFFE8DFC8), borderRadius: BorderRadius.circular(30)),
-              child: const Icon(Icons.castle_rounded, size: 30, color: Color(0xFF8B7A3E)),
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8DFC8),
+                borderRadius: BorderRadius.circular(36),
+              ),
+              child: const Icon(Icons.castle_rounded, size: 34, color: Color(0xFF8B7A3E)),
             ),
           ),
           const SizedBox(height: 12),
-          Center(child: Text(player.data.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
+          Center(
+            child: Text(
+              player.data.name,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textDark),
+            ),
+          ),
           const SizedBox(height: 4),
-          const Center(child: Text('Шукай, і знайдеш 📖', style: TextStyle(fontSize: 13, color: AppColors.textMuted))),
+          const Center(
+            child: Text(
+              'Шукай, і знайдеш 📖',
+              style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+            ),
+          ),
           const SizedBox(height: 20),
+
+          // Загальний прогрес
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.card,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: const [BoxShadow(color: Color(0x12000000), blurRadius: 8, offset: Offset(0, 2))],
+              border: Border.all(color: AppColors.border),
+              boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 8, offset: Offset(0, 2))],
             ),
             child: Row(
               children: [
                 SizedBox(
-                  width: 56,
-                  height: 56,
+                  width: 60,
+                  height: 60,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       CircularProgressIndicator(
                         value: pct / 100,
                         strokeWidth: 5,
-                        backgroundColor: const Color(0xFFE8DFC8),
+                        backgroundColor: const Color(0xFFECE8DE),
                         valueColor: const AlwaysStoppedAnimation(AppColors.goldDark),
                       ),
-                      Text('$pct%', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.goldDark)),
+                      Text(
+                        '$pct%',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.goldDark,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Загальний прогрес', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                    Text('$progress/$target', style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Загальний прогрес',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        '$progress/$target',
+                        style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 12),
+
+          // Статистика 3 блоки
           Row(
             children: [
-              Expanded(child: _stat(Icons.local_fire_department_rounded, '${player.data.streak} дні', 'Серія')),
-              const SizedBox(width: 12),
-              Expanded(child: _stat(Icons.text_fields_rounded, '${player.data.wordsFound}', 'Знайдено слів')),
-              const SizedBox(width: 12),
-              Expanded(child: _stat(Icons.star_rounded, '${player.data.levelsCompleted}', 'Пройдено рівнів')),
+              Expanded(
+                child: _stat(
+                  Icons.local_fire_department_rounded,
+                  '${player.data.streak}',
+                  'Серія днів',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _stat(
+                  Icons.bar_chart_rounded,
+                  '${player.data.wordsFound}',
+                  'Знайдено слів',
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _stat(
+                  Icons.emoji_events_rounded,
+                  '${player.data.levelsCompleted}',
+                  'Пройдено рівнів',
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 20),
+
+          // Меню
           _menuRow(context, Icons.emoji_events_rounded, 'Досягнення', () => context.push('/achievements')),
           _menuRow(context, Icons.settings_rounded, 'Налаштування', () => context.push('/settings')),
           _menuRow(context, Icons.info_outline_rounded, 'Про гру', () {}),
@@ -90,13 +157,22 @@ class ProfileScreen extends StatelessWidget {
   Widget _stat(IconData icon, String value, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.border),
+      ),
       child: Column(
         children: [
           Icon(icon, color: AppColors.gold, size: 18),
           const SizedBox(height: 6),
-          Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
+          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+          ),
         ],
       ),
     );
@@ -111,15 +187,23 @@ class ProfileScreen extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
           onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                Icon(icon, size: 18, color: AppColors.textMuted),
-                const SizedBox(width: 12),
-                Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
-                const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFFC9C4B4)),
-              ],
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(icon, size: 18, color: AppColors.textMuted),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                  ),
+                  const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFFC0BDB0)),
+                ],
+              ),
             ),
           ),
         ),

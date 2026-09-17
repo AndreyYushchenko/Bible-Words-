@@ -8,7 +8,10 @@ import '../state/player_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/coin_badge.dart';
 import '../widgets/crossword_grid.dart';
+import '../widgets/flying_letters.dart';
 import '../widgets/letter_wheel.dart';
+import '../widgets/particle_burst.dart';
+import '../widgets/word_bubble.dart';
 
 class GameplayScreen extends StatefulWidget {
   const GameplayScreen({super.key, required this.levelId});
@@ -24,7 +27,14 @@ class _GameplayScreenState extends State<GameplayScreen> {
   late List<String> _wheelLetters;
   final List<int> _selected = [];
   final Set<String> _solved = {};
+  final Set<String> _bonusFound = {};
   int _hintsUsed = 0;
+  Offset? _dragPosition;
+  bool _flying = false;
+
+  final GlobalKey _wheelKey = GlobalKey();
+  final GlobalKey _gridKey = GlobalKey();
+  final GlobalKey<WordBubbleState> _bubbleKey = GlobalKey<WordBubbleState>();
 
   @override
   void initState() {
@@ -40,31 +50,115 @@ class _GameplayScreenState extends State<GameplayScreen> {
       .where((a) => !_solved.contains(a))
       .toList();
 
-  void _onLetterTap(int index) {
-    if (_selected.contains(index)) return;
-    setState(() => _selected.add(index));
+  void _onLetterAdd(int index) => setState(() => _selected.add(index));
 
+  void _onBacktrack() => setState(() => _selected.removeLast());
+
+  void _onDragPositionChanged(Offset? pos) =>
+      setState(() => _dragPosition = pos);
+
+  Offset _wheelGlobalOrigin() =>
+      (_wheelKey.currentContext!.findRenderObject() as RenderBox).localToGlobal(
+        Offset.zero,
+      );
+
+  Offset _gridGlobalOrigin() =>
+      (_gridKey.currentContext!.findRenderObject() as RenderBox).localToGlobal(
+        Offset.zero,
+      );
+
+  void _onSubmit() {
+    if (_flying || _selected.isEmpty) {
+      setState(_selected.clear);
+      return;
+    }
     final attempt = _attempt;
+    final indices = List<int>.from(_selected);
+
     if (_remainingWords.contains(attempt)) {
-      final player = context.read<PlayerProvider>();
-      player.wordFound();
-      player.addCoins(5);
-      setState(() {
-        _solved.add(attempt);
-        _selected.clear();
-      });
-      if (_remainingWords.isEmpty) {
-        _finishLevel();
-      }
+      _flyToGrid(attempt, indices);
       return;
     }
 
-    final longestRemaining = _remainingWords.map((w) => w.length).fold(0, max);
-    if (attempt.length >= longestRemaining && longestRemaining > 0) {
-      Future.delayed(const Duration(milliseconds: 250), () {
-        if (mounted) setState(() => _selected.clear());
+    if (_level.bonusWords.contains(attempt) && !_bonusFound.contains(attempt)) {
+      final player = context.read<PlayerProvider>();
+      player.addCoins(3);
+      setState(() {
+        _bonusFound.add(attempt);
+        _selected.clear();
       });
+      final origin = _wheelGlobalOrigin();
+      ParticleBurst.show(
+        context,
+        origin + Offset(125, 20),
+        color: AppColors.green,
+        count: 8,
+      );
+      return;
     }
+
+    _bubbleKey.currentState?.shake();
+    setState(_selected.clear);
+  }
+
+  void _flyToGrid(String answer, List<int> indices) {
+    final word = _level.words.firstWhere((w) => w.answer == answer);
+    final wheelOrigin = _wheelGlobalOrigin();
+    final gridOrigin = _gridGlobalOrigin();
+
+    final wheel = LetterWheel(
+      wheelKey: _wheelKey,
+      letters: _wheelLetters,
+      selected: const [],
+      dragPosition: null,
+      onLetterAdd: (_) {},
+      onBacktrack: () {},
+      onDragPositionChanged: (_) {},
+      onSubmit: () {},
+      onShuffle: () {},
+      onClear: () {},
+    );
+    final grid = CrosswordGrid(
+      gridKey: _gridKey,
+      level: _level,
+      solvedWords: _solved,
+    );
+
+    final starts = indices
+        .map((i) => wheelOrigin + wheel.orbCenter(i))
+        .toList();
+    final ends = word
+        .cells()
+        .map((c) => gridOrigin + grid.cellCenter(c.$1, c.$2))
+        .toList();
+
+    setState(() {
+      _flying = true;
+      _selected.clear();
+    });
+
+    FlyingLetters.show(
+      context,
+      letters: answer.split(''),
+      starts: starts,
+      ends: ends,
+      onDone: () {
+        if (!mounted) return;
+        final player = context.read<PlayerProvider>();
+        player.wordFound();
+        player.addCoins(5);
+        setState(() {
+          _solved.add(answer);
+          _flying = false;
+        });
+        ParticleBurst.show(
+          context,
+          ends[ends.length ~/ 2],
+          color: AppColors.gold,
+        );
+        if (_remainingWords.isEmpty) _finishLevel();
+      },
+    );
   }
 
   void _shuffle() {
@@ -100,22 +194,44 @@ class _GameplayScreenState extends State<GameplayScreen> {
           VoidCallback onUse,
         ) {
           return ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 4,
+            ),
             leading: Container(
-              width: 36,
-              height: 36,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                 color: const Color(0xFFF5EFD9),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, size: 18, color: AppColors.goldDark),
+              child: Icon(icon, size: 20, color: AppColors.goldDark),
             ),
-            title: Text(label, style: const TextStyle(fontSize: 14)),
-            trailing: Text(
-              '-$cost',
-              style: const TextStyle(
-                color: AppColors.textMuted,
-                fontWeight: FontWeight.w700,
-              ),
+            title: Text(
+              label,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ShaderMask(
+                  shaderCallback: (r) => AppColors.goldGradient.createShader(r),
+                  child: const Icon(
+                    Icons.monetization_on_rounded,
+                    size: 14,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '-$cost',
+                  style: const TextStyle(
+                    color: AppColors.textDark,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
             onTap: () {
               if (!player.spendCoins(cost)) {
@@ -131,7 +247,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
         }
 
         return Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.only(top: 8, bottom: 20),
           decoration: const BoxDecoration(
             color: AppColors.cream,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -139,8 +255,18 @@ class _GameplayScreenState extends State<GameplayScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Drag handle
+              Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.lockedIcon,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -154,10 +280,12 @@ class _GameplayScreenState extends State<GameplayScreen> {
                     IconButton(
                       icon: const Icon(Icons.close_rounded),
                       onPressed: () => Navigator.pop(sheetContext),
+                      padding: EdgeInsets.zero,
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 8),
               hintRow(
                 Icons.lightbulb_outline_rounded,
                 'Відкрити літеру',
@@ -189,6 +317,55 @@ class _GameplayScreenState extends State<GameplayScreen> {
                 });
                 _finishLevel();
               }),
+              const SizedBox(height: 4),
+              // Watch ad row
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 4,
+                ),
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.goldLight.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.play_circle_outline_rounded,
+                    size: 20,
+                    color: AppColors.goldDark,
+                  ),
+                ),
+                title: const Text(
+                  'Дивись відео',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ShaderMask(
+                      shaderCallback: (r) =>
+                          AppColors.goldGradient.createShader(r),
+                      child: const Icon(
+                        Icons.monetization_on_rounded,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'і отримай 50 монет',
+                      style: TextStyle(
+                        color: AppColors.textDark,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                onTap: () => Navigator.pop(sheetContext),
+              ),
             ],
           ),
         );
@@ -202,113 +379,241 @@ class _GameplayScreenState extends State<GameplayScreen> {
     final category = categoryById(_level.categoryId);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF2E2A24),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 16, 4),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.chevron_left_rounded,
-                        color: Colors.white,
-                      ),
-                      onPressed: () => context.pop(),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Text(
-                            'Рівень ${_level.number}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          Text(
-                            category.name,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    CoinBadge(amount: player.coins),
-                  ],
-                ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Фоновий градієнт
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF3E362A),
+                  Color(0xFF2A2018),
+                  Color(0xFF1E170F),
+                ],
               ),
-              const SizedBox(height: 24),
-              CrosswordGrid(level: _level, solvedWords: _solved),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            ),
+          ),
+          // Верхній пейзаж
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 200,
+            child: Opacity(
+              opacity: 0.25,
+              child: CustomPaint(painter: _GameBgPainter()),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  InkWell(
-                    onTap: _openHints,
-                    customBorder: const CircleBorder(),
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          const Center(
-                            child: Icon(
-                              Icons.lightbulb_outline_rounded,
-                              color: AppColors.goldDark,
-                              size: 20,
-                            ),
+                  // AppBar
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.chevron_left_rounded,
+                            color: Colors.white,
+                            size: 28,
                           ),
-                          Positioned(
-                            right: -2,
-                            top: -2,
-                            child: Container(
-                              width: 18,
-                              height: 18,
-                              decoration: const BoxDecoration(
-                                color: AppColors.goldDark,
-                                shape: BoxShape.circle,
+                          onPressed: () => context.pop(),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Рівень ${_level.number}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
                               ),
-                              child: Center(
-                                child: Text(
-                                  '${_remainingWords.length}',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
+                              Text(
+                                category.name,
+                                style: const TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        CoinBadge(amount: player.coins),
+                        const SizedBox(width: 4),
+                        // Налаштування / шестерня
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.settings_rounded,
+                            size: 16,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Кросворд
+                  CrosswordGrid(
+                    gridKey: _gridKey,
+                    level: _level,
+                    solvedWords: _solved,
+                  ),
+
+                  if (_bonusFound.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 8,
+                      children: _bonusFound
+                          .map(
+                            (w) => Chip(
+                              label: Text(
+                                w,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              backgroundColor: Colors.white,
+                              visualDensity: VisualDensity.compact,
+                              avatar: const Icon(
+                                Icons.star_rounded,
+                                size: 14,
+                                color: AppColors.goldDark,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    height: 52,
+                    child: Center(
+                      child: WordBubble(key: _bubbleKey, text: _attempt),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Кнопка підказки
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: _openHints,
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              const Center(
+                                child: Icon(
+                                  Icons.lightbulb_outline_rounded,
+                                  color: AppColors.goldDark,
+                                  size: 22,
+                                ),
+                              ),
+                              Positioned(
+                                right: -3,
+                                top: -3,
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.goldDark,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${_remainingWords.length}',
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
+
+                  // Колесо літер
+                  LetterWheel(
+                    wheelKey: _wheelKey,
+                    letters: _wheelLetters,
+                    selected: _selected,
+                    dragPosition: _dragPosition,
+                    onLetterAdd: _onLetterAdd,
+                    onBacktrack: _onBacktrack,
+                    onDragPositionChanged: _onDragPositionChanged,
+                    onSubmit: _onSubmit,
+                    onShuffle: _shuffle,
+                    onClear: () => setState(() => _selected.clear()),
+                  ),
+                  const SizedBox(height: 28),
                 ],
               ),
-              const SizedBox(height: 12),
-              LetterWheel(
-                letters: _wheelLetters,
-                selected: _selected,
-                onLetterTap: _onLetterTap,
-                onShuffle: _shuffle,
-                onClear: () => setState(() => _selected.clear()),
-              ),
-              const SizedBox(height: 24),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
+
+class _GameBgPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = const Color(0xFFD4B070);
+
+    // Колони
+    for (int i = 0; i < 5; i++) {
+      final x = size.width * (0.1 + i * 0.2);
+      canvas.drawRect(
+        Rect.fromLTWH(x, size.height * 0.3, 8, size.height * 0.7),
+        paint,
+      );
+      canvas.drawRect(Rect.fromLTWH(x - 4, size.height * 0.25, 16, 6), paint);
+    }
+
+    // Горизонт
+    paint.color = const Color(0xFFC4A060);
+    canvas.drawRect(
+      Rect.fromLTWH(0, size.height * 0.7, size.width, size.height * 0.3),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

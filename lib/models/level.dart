@@ -30,6 +30,7 @@ class Level {
     required this.number,
     required this.words,
     required this.wheelLetters,
+    this.bonusWords = const [],
     this.stars = 0,
     this.unlocked = false,
   });
@@ -39,6 +40,10 @@ class Level {
   final int number;
   final List<PuzzleWord> words;
   final List<String> wheelLetters;
+
+  /// Real words spellable from [wheelLetters] that aren't crossword answers.
+  /// Finding one gives a small coin bonus but doesn't fill the grid.
+  final List<String> bonusWords;
   final int stars;
   final bool unlocked;
 

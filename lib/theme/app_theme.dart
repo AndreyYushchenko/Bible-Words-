@@ -2,29 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const cream = Color(0xFFFAF8F4);
+  static const cream = Color(0xFFFAF8F2);
   static const card = Color(0xFFFFFFFF);
-  static const textDark = Color(0xFF241F17);
+  static const textDark = Color(0xFF1E1A14);
   static const textMuted = Color(0xFF8B8577);
-  static const goldLight = Color(0xFFE8C878);
-  static const goldDark = Color(0xFFC9862E);
-  static const gold = Color(0xFFD9A94E);
-  static const teal = Color(0xFF2C9678);
-  static const tealDark = Color(0xFF1F7A62);
+  static const goldLight = Color(0xFFEDCC7A);
+  static const goldMid = Color(0xFFD4A84B);
+  static const goldDark = Color(0xFFC08B28);
+  static const gold = Color(0xFFD4A84B);
+  static const green = Color(0xFF4CAF82);
+  static const greenDark = Color(0xFF3A9068);
+  // Alias for backwards compatibility
+  static const teal = green;
+  static const tealDark = greenDark;
   static const lockedBg = Color(0xFFECEAE3);
   static const lockedIcon = Color(0xFFABA694);
-  static const border = Color(0x14000000);
+  static const border = Color(0x18000000);
 
+  // Золотий градієнт кнопок та іконок
   static const goldGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [goldLight, goldDark],
   );
 
-  static const tealGradient = LinearGradient(
+  // Зелений градієнт (для активних елементів)
+  static const greenGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [teal, tealDark],
+    colors: [green, greenDark],
+  );
+
+  // Фоновий градієнт для темних екранів (gameplay, splash)
+  static const skyGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFFD4B896), Color(0xFFB89B72)],
   );
 }
 
@@ -49,6 +62,17 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppColors.textDark,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((s) {
+          if (s.contains(WidgetState.selected)) return Colors.white;
+          return const Color(0xFFCCC8BE);
+        }),
+        trackColor: WidgetStateProperty.resolveWith((s) {
+          if (s.contains(WidgetState.selected)) return AppColors.green;
+          return const Color(0xFFDDD9D1);
+        }),
+        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
       ),
     );
   }

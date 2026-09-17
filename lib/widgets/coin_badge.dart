@@ -13,12 +13,15 @@ class CoinBadge extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          height: 32,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          height: 34,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: AppColors.card,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 6, offset: Offset(0, 2))],
+            borderRadius: BorderRadius.circular(17),
+            border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(color: Color(0x14000000), blurRadius: 8, offset: Offset(0, 2)),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -28,7 +31,14 @@ class CoinBadge extends StatelessWidget {
                 child: const Icon(Icons.monetization_on_rounded, size: 16, color: Colors.white),
               ),
               const SizedBox(width: 6),
-              Text('$amount', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textDark)),
+              Text(
+                '$amount',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: AppColors.textDark,
+                ),
+              ),
             ],
           ),
         ),
@@ -36,11 +46,14 @@ class CoinBadge extends StatelessWidget {
           const SizedBox(width: 6),
           InkWell(
             onTap: onAdd,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(17),
             child: Container(
-              width: 32,
-              height: 32,
-              decoration: const BoxDecoration(color: AppColors.textDark, shape: BoxShape.circle),
+              width: 34,
+              height: 34,
+              decoration: const BoxDecoration(
+                color: AppColors.textDark,
+                shape: BoxShape.circle,
+              ),
               child: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
             ),
           ),

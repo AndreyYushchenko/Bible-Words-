@@ -11,25 +11,78 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final player = context.watch<PlayerProvider>();
 
-    Widget row({required Widget leading, required String label, Widget? trailing}) {
+    Widget iconBox(IconData icon) {
+      return Container(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
+          color: AppColors.lockedBg,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, size: 17, color: AppColors.textMuted),
+      );
+    }
+
+    Widget row({
+      required IconData leadingIcon,
+      required String label,
+      Widget? trailing,
+    }) {
       return Container(
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(14)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border),
+        ),
         child: Row(
           children: [
-            leading,
-            const SizedBox(width: 12),
-            Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
+            iconBox(leadingIcon),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            ),
             ?trailing,
           ],
         ),
       );
     }
 
+    Widget arrowRow({required IconData leadingIcon, required String label, String? subtitle}) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            iconBox(leadingIcon),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            ),
+            if (subtitle != null)
+              Text(subtitle, style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFFC0BDB0)),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
+      backgroundColor: AppColors.cream,
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.chevron_left_rounded), onPressed: () => context.pop()),
+        backgroundColor: AppColors.cream,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left_rounded, size: 28),
+          onPressed: () => context.pop(),
+        ),
         title: const Text('Налаштування', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
         centerTitle: true,
       ),
@@ -37,50 +90,36 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           row(
-            leading: const Icon(Icons.volume_up_rounded, size: 18, color: AppColors.textMuted),
+            leadingIcon: Icons.volume_up_rounded,
             label: 'Звуки',
             trailing: Switch(
               value: player.soundOn,
-              activeThumbColor: AppColors.teal,
               onChanged: player.toggleSound,
             ),
           ),
           row(
-            leading: const Icon(Icons.music_note_rounded, size: 18, color: AppColors.textMuted),
+            leadingIcon: Icons.music_note_rounded,
             label: 'Музика',
             trailing: Switch(
               value: player.musicOn,
-              activeThumbColor: AppColors.teal,
               onChanged: player.toggleMusic,
             ),
           ),
-          row(
-            leading: const Icon(Icons.wb_sunny_rounded, size: 18, color: AppColors.textMuted),
+          arrowRow(
+            leadingIcon: Icons.wb_sunny_rounded,
             label: 'Тема',
-            trailing: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Світла', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
-                Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFFC9C4B4)),
-              ],
-            ),
+            subtitle: 'Світла ☀',
           ),
-          row(
-            leading: const Icon(Icons.language_rounded, size: 18, color: AppColors.textMuted),
+          arrowRow(
+            leadingIcon: Icons.language_rounded,
             label: 'Мова',
-            trailing: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Українська', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
-                Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFFC9C4B4)),
-              ],
-            ),
+            subtitle: 'Українська',
           ),
-          const SizedBox(height: 10),
-          row(leading: const Icon(Icons.chat_bubble_outline_rounded, size: 18, color: AppColors.textMuted), label: "Зворотній зв'язок", trailing: const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFFC9C4B4))),
-          row(leading: const Icon(Icons.star_border_rounded, size: 18, color: AppColors.textMuted), label: 'Оцінити додаток', trailing: const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFFC9C4B4))),
-          row(leading: const Icon(Icons.share_rounded, size: 18, color: AppColors.textMuted), label: 'Поділитися', trailing: const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFFC9C4B4))),
-          row(leading: const Icon(Icons.info_outline_rounded, size: 18, color: AppColors.textMuted), label: 'Про гру', trailing: const Icon(Icons.chevron_right_rounded, size: 16, color: Color(0xFFC9C4B4))),
+          const SizedBox(height: 8),
+          arrowRow(leadingIcon: Icons.chat_bubble_outline_rounded, label: "Зворотній зв'язок"),
+          arrowRow(leadingIcon: Icons.star_border_rounded, label: 'Оцінити додаток'),
+          arrowRow(leadingIcon: Icons.share_rounded, label: 'Поділитися'),
+          arrowRow(leadingIcon: Icons.info_outline_rounded, label: 'Про гру'),
         ],
       ),
     );

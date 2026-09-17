@@ -32,6 +32,7 @@ final List<Level> namesLevels = [
       PuzzleWord(answer: 'САУЛ', row: 1, col: 1, direction: WordDirection.horizontal),
     ],
     wheelLetters: const ['Д', 'А', 'В', 'И', 'С', 'У', 'Л'],
+    bonusWords: const ['САД', 'ВАЛ', 'УДАВ'],
   ),
   Level(
     id: 'names-2',
@@ -43,6 +44,7 @@ final List<Level> namesLevels = [
       PuzzleWord(answer: 'ЛОТ', row: 1, col: 0, direction: WordDirection.horizontal),
     ],
     wheelLetters: const ['Н', 'О', 'Й', 'Л', 'Т'],
+    bonusWords: const ['ТОН'],
   ),
   Level(
     id: 'names-3',
@@ -54,6 +56,7 @@ final List<Level> namesLevels = [
       PuzzleWord(answer: 'ЄВА', row: 2, col: 0, direction: WordDirection.horizontal),
     ],
     wheelLetters: const ['Л', 'Е', 'В', 'Є', 'А'],
+    bonusWords: const ['АЛЕ'],
   ),
 ];
 

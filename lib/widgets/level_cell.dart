@@ -29,7 +29,12 @@ class LevelCell extends StatelessWidget {
             gradient: selected ? AppColors.goldGradient : null,
             color: selected ? null : (locked ? AppColors.lockedBg : AppColors.card),
             borderRadius: BorderRadius.circular(16),
-            border: selected ? null : Border.all(color: AppColors.border),
+            border: selected
+                ? null
+                : Border.all(color: locked ? Colors.transparent : AppColors.border),
+            boxShadow: selected
+                ? const [BoxShadow(color: Color(0x30C08B28), blurRadius: 8, offset: Offset(0, 3))]
+                : null,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -39,10 +44,12 @@ class LevelCell extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: selected ? const Color(0xFF241408) : (locked ? AppColors.lockedIcon : AppColors.textDark),
+                  color: selected
+                      ? const Color(0xFF241408)
+                      : (locked ? AppColors.lockedIcon : AppColors.textDark),
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 5),
               if (locked)
                 const Icon(Icons.lock_rounded, size: 14, color: AppColors.lockedIcon)
               else
@@ -52,8 +59,10 @@ class LevelCell extends StatelessWidget {
                     final filled = i < stars;
                     return Icon(
                       Icons.star_rounded,
-                      size: 12,
-                      color: filled ? (selected ? const Color(0xFF241408) : AppColors.gold) : const Color(0xFFD8D4C8),
+                      size: 13,
+                      color: filled
+                          ? (selected ? const Color(0xFF241408) : AppColors.gold)
+                          : const Color(0xFFDDD9CF),
                     );
                   }),
                 ),

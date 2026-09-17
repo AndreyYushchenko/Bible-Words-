@@ -24,12 +24,13 @@ class AppBottomNavBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 64,
+          height: 60,
           child: Row(
             children: List.generate(_items.length, (i) {
               final item = _items[i];
               final active = i == currentIndex;
-              final color = active ? AppColors.teal : const Color(0xFFB8B2A3);
+              // На дизайні активний колір — золотий/темний, неактивний — сірий
+              final color = active ? AppColors.goldDark : const Color(0xFFB8B2A3);
               return Expanded(
                 child: InkWell(
                   onTap: () => onTap(i),
@@ -37,10 +38,14 @@ class AppBottomNavBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(item.icon, size: 22, color: color),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 3),
                       Text(
                         item.label,
-                        style: TextStyle(fontSize: 10, color: color, fontWeight: active ? FontWeight.w600 : FontWeight.w400),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: color,
+                          fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                        ),
                       ),
                     ],
                   ),

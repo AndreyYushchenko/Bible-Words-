@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../data/achievements_data.dart';
 import '../models/achievement.dart';
 import '../state/player_provider.dart';
+import '../theme/app_theme.dart';
 import '../widgets/achievement_card.dart';
 
 class AchievementsScreen extends StatelessWidget {
@@ -19,11 +20,17 @@ class AchievementsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Досягнення', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+      backgroundColor: AppColors.cream,
+      appBar: AppBar(
+        backgroundColor: AppColors.cream,
+        elevation: 0,
+        title: const Text('Досягнення', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+        centerTitle: true,
+      ),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: achievements.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 12),
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
         itemBuilder: (context, i) {
           final a = achievements[i];
           return AchievementCard(achievement: a, progress: a.progressSelector(stats));
