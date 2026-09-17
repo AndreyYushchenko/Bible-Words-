@@ -28,6 +28,8 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
   final List<int> _selected = [];
   final Set<String> _solved = {};
   final Set<String> _bonusFound = {};
+  final Set<(int, int)> _revealedCells = {};
+  final Set<int> _disabledWheelIndices = {};
   int _hintsUsed = 0;
   Offset? _dragPosition;
   bool _flying = false;
@@ -308,12 +310,20 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                 () {
                   final remaining = _remainingWords;
                   if (remaining.isEmpty) return;
+                  final word = _level.words.firstWhere((w) => w.answer == remaining.first);
+                  final cells = word.cells();
+                  final target = cells.firstWhere(
+                    (c) => !_revealedCells.contains(c),
+                    orElse: () => cells.first,
+                  );
                   setState(() {
-                    _solved.add(remaining.first);
+                    _revealedCells.add(target);
                     _hintsUsed++;
-                    _selected.clear();
                   });
-                  if (_remainingWords.isEmpty) _finishLevel();
+                  if (cells.every(_revealedCells.contains)) {
+                    setState(() => _solved.add(word.answer));
+                    if (_remainingWords.isEmpty) _finishLevel();
+                  }
                 },
               ),
               hintRow(
@@ -321,16 +331,42 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                 'Прибрати зайві літери',
                 10,
                 () {
-                  setState(() => _hintsUsed++);
+                  final needed = <String, int>{};
+                  for (final w in _remainingWords) {
+                    final counts = <String, int>{};
+                    for (final ch in w.split('')) {
+                      counts[ch] = (counts[ch] ?? 0) + 1;
+                    }
+                    counts.forEach((ch, count) {
+                      if (count > (needed[ch] ?? 0)) needed[ch] = count;
+                    });
+                  }
+                  final usedCount = <String, int>{};
+                  final toDisable = <int>{};
+                  for (var i = 0; i < _wheelLetters.length; i++) {
+                    final ch = _wheelLetters[i];
+                    final used = usedCount[ch] ?? 0;
+                    if (used < (needed[ch] ?? 0)) {
+                      usedCount[ch] = used + 1;
+                    } else {
+                      toDisable.add(i);
+                    }
+                  }
+                  setState(() {
+                    _disabledWheelIndices.addAll(toDisable);
+                    _hintsUsed++;
+                  });
                 },
               ),
               hintRow(Icons.remove_red_eye_outlined, 'Показати слово', 30, () {
+                final remaining = _remainingWords;
+                if (remaining.isEmpty) return;
                 setState(() {
-                  _solved.addAll(_remainingWords);
+                  _solved.add(remaining.first);
                   _hintsUsed += 3;
                   _selected.clear();
                 });
-                _finishLevel();
+                if (_remainingWords.isEmpty) _finishLevel();
               }),
               const SizedBox(height: 4),
               // Watch ad row
@@ -595,6 +631,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                     gridKey: _gridKey,
                     level: _level,
                     solvedWords: _solved,
+                    revealedCells: _revealedCells,
                     cellSize: 50,
                   ),
 
@@ -630,6 +667,7 @@ class _GameplayScreenState extends State<GameplayScreen> with SingleTickerProvid
                             onDragPositionChanged: _onDragPositionChanged,
                             onSubmit: _onSubmit,
                             onShuffle: _shuffle,
+                            disabled: _disabledWheelIndices,
                             diameter: 254,
                           ),
                         ),

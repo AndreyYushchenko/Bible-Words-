@@ -3,11 +3,22 @@ import '../models/level.dart';
 import '../theme/app_theme.dart';
 
 class CrosswordGrid extends StatelessWidget {
-  const CrosswordGrid({super.key, required this.gridKey, required this.level, required this.solvedWords, this.cellSize = 42});
+  const CrosswordGrid({
+    super.key,
+    required this.gridKey,
+    required this.level,
+    required this.solvedWords,
+    this.revealedCells = const {},
+    this.cellSize = 42,
+  });
 
   final GlobalKey gridKey;
   final Level level;
   final Set<String> solvedWords;
+
+  /// Cells revealed one-at-a-time by the "Відкрити літеру" hint, for a word
+  /// that isn't fully solved yet.
+  final Set<(int, int)> revealedCells;
   final double cellSize;
 
   static const _gap = 4.0;
@@ -46,6 +57,7 @@ class CrosswordGrid extends StatelessWidget {
               final pos = (r, c);
               final letter = letterAt[pos];
               final solved = solvedAt[pos] ?? false;
+              final revealed = !solved && revealedCells.contains(pos);
               return Padding(
                 padding: const EdgeInsets.only(right: 4),
                 child: SizedBox(
@@ -60,19 +72,21 @@ class CrosswordGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(7),
                             border: solved
                                 ? null
-                                : Border.all(color: const Color(0xFFE0DCD4), width: 1),
+                                : Border.all(
+                                    color: revealed ? AppColors.goldDark : const Color(0xFFE0DCD4),
+                                    width: revealed ? 2 : 1,
+                                  ),
                             boxShadow: solved
                                 ? const [BoxShadow(color: Color(0x30C08B28), blurRadius: 6, offset: Offset(0, 2))]
                                 : const [BoxShadow(color: Color(0x15000000), blurRadius: 3, offset: Offset(0, 1))],
                           ),
                           child: Center(
                             child: Text(
-                              // Show letter if solved, empty otherwise
-                              solved ? letter : '',
+                              solved || revealed ? letter : '',
                               style: TextStyle(
                                 fontSize: cellSize > 38 ? 17 : 14,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF241408),
+                                color: revealed ? AppColors.goldDark : const Color(0xFF241408),
                               ),
                             ),
                           ),

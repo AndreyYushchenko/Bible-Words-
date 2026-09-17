@@ -18,12 +18,16 @@ class LetterWheel extends StatelessWidget {
     required this.onDragPositionChanged,
     required this.onSubmit,
     required this.onShuffle,
+    this.disabled = const {},
     this.diameter = 250,
   });
 
   final GlobalKey wheelKey;
   final List<String> letters;
   final List<int> selected;
+
+  /// Orb indices grayed out and untappable by the "Прибрати зайві літери" hint.
+  final Set<int> disabled;
 
   /// Raw finger position (wheel-local), or null when not dragging.
   final Offset? dragPosition;
@@ -48,6 +52,7 @@ class LetterWheel extends StatelessWidget {
 
   int? _orbAt(Offset local) {
     for (var i = 0; i < letters.length; i++) {
+      if (disabled.contains(i)) continue;
       if ((orbCenter(i) - local).distance <= _orbSize * 0.7) return i;
     }
     return null;
@@ -117,38 +122,43 @@ class LetterWheel extends StatelessWidget {
   Widget _orb(int i) {
     final c = orbCenter(i);
     final isSelected = selected.contains(i);
+    final isDisabled = disabled.contains(i);
 
     return Positioned(
       left: c.dx - _orbSize / 2,
       top: c.dy - _orbSize / 2,
       child: IgnorePointer(
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          curve: Curves.easeOut,
-          width: isSelected ? _orbSize * 1.12 : _orbSize,
-          height: isSelected ? _orbSize * 1.12 : _orbSize,
-          decoration: BoxDecoration(
-            gradient: isSelected
-                ? const LinearGradient(colors: [Color(0xFFFFF3D6), Color(0xFFF0C878)])
-                : AppColors.goldGradient,
-            shape: BoxShape.circle,
-            border: isSelected ? Border.all(color: Colors.white, width: 2.5) : null,
-            boxShadow: [
-              BoxShadow(
-                color: isSelected ? const Color(0x80F0C878) : const Color(0x40C08B28),
-                blurRadius: isSelected ? 16 : 8,
-                spreadRadius: isSelected ? 1 : 0,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              letters[i],
-              style: TextStyle(
-                fontSize: _orbSize > 52 ? 22 : 19,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF241408),
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: isDisabled ? 0.25 : 1,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            curve: Curves.easeOut,
+            width: isSelected ? _orbSize * 1.12 : _orbSize,
+            height: isSelected ? _orbSize * 1.12 : _orbSize,
+            decoration: BoxDecoration(
+              gradient: isSelected
+                  ? const LinearGradient(colors: [Color(0xFFFFF3D6), Color(0xFFF0C878)])
+                  : AppColors.goldGradient,
+              shape: BoxShape.circle,
+              border: isSelected ? Border.all(color: Colors.white, width: 2.5) : null,
+              boxShadow: [
+                BoxShadow(
+                  color: isSelected ? const Color(0x80F0C878) : const Color(0x40C08B28),
+                  blurRadius: isSelected ? 16 : 8,
+                  spreadRadius: isSelected ? 1 : 0,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                letters[i],
+                style: TextStyle(
+                  fontSize: _orbSize > 52 ? 22 : 19,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF241408),
+                ),
               ),
             ),
           ),
