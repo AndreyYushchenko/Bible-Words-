@@ -19,8 +19,8 @@ final categories = <Category>[
   const Category(id: 'words', name: 'Біблійні слова', icon: Icons.auto_awesome_rounded, totalLevels: 50, unlocked: false),
 ];
 
-/// The 3 real, playable levels for "Імена людей". Everything else in that
-/// category is shown locked in the level-select grid.
+/// The 7 real, playable levels for "Імена людей". Levels 8-50 are shown
+/// locked in the level-select grid — no real content authored for them yet.
 final List<Level> namesLevels = [
   Level(
     id: 'names-1',
@@ -58,6 +58,54 @@ final List<Level> namesLevels = [
     ],
     wheelLetters: const ['Л', 'Е', 'В', 'Є', 'А'],
     bonusWords: const ['АЛЕ'],
+  ),
+  Level(
+    id: 'names-4',
+    categoryId: 'names',
+    number: 4,
+    unlocked: false,
+    words: const [
+      PuzzleWord(answer: 'ГАД', row: 0, col: 1, direction: WordDirection.vertical),
+      PuzzleWord(answer: 'ДАН', row: 1, col: 0, direction: WordDirection.horizontal),
+    ],
+    wheelLetters: const ['Г', 'А', 'Д', 'Н'],
+    bonusWords: const ['НАД'],
+  ),
+  Level(
+    id: 'names-5',
+    categoryId: 'names',
+    number: 5,
+    unlocked: false,
+    words: const [
+      PuzzleWord(answer: 'ЛІЯ', row: 0, col: 1, direction: WordDirection.vertical),
+      PuzzleWord(answer: 'ІСАК', row: 1, col: 1, direction: WordDirection.horizontal),
+    ],
+    wheelLetters: const ['Л', 'І', 'Я', 'С', 'А', 'К'],
+    bonusWords: const ['ЛАК'],
+  ),
+  Level(
+    id: 'names-6',
+    categoryId: 'names',
+    number: 6,
+    unlocked: false,
+    words: const [
+      PuzzleWord(answer: 'ЯКІВ', row: 0, col: 2, direction: WordDirection.vertical),
+      PuzzleWord(answer: 'ЛІЯ', row: 2, col: 1, direction: WordDirection.horizontal),
+    ],
+    wheelLetters: const ['Я', 'К', 'І', 'В', 'Л'],
+    bonusWords: const ['ВІЛ'],
+  ),
+  Level(
+    id: 'names-7',
+    categoryId: 'names',
+    number: 7,
+    unlocked: false,
+    words: const [
+      PuzzleWord(answer: 'АСИР', row: 0, col: 1, direction: WordDirection.vertical),
+      PuzzleWord(answer: 'ІСАК', row: 1, col: 0, direction: WordDirection.horizontal),
+    ],
+    wheelLetters: const ['А', 'С', 'И', 'Р', 'І', 'К'],
+    bonusWords: const ['РИС'],
   ),
 ];
 
