@@ -39,7 +39,8 @@ flutter:
     - assets/images/bg_splash.jpg
     - assets/images/bg_gameplay.jpg
     - assets/images/bg_landscape.jpg
-    - assets/audio/
+    - assets/images/app_icon_cropped.jpg
+    - assets/audio/bg_music.mp3
     - assets/sounds/tap.wav
     - assets/sounds/success.wav
     - assets/sounds/error.wav

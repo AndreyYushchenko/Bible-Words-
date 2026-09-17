@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'services/music_service.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/achievements_screen.dart';
 import 'screens/daily_challenge_screen.dart';
@@ -41,8 +42,34 @@ final _router = GoRouter(
   ],
 );
 
-class BibleWordsApp extends StatelessWidget {
+class BibleWordsApp extends StatefulWidget {
   const BibleWordsApp({super.key});
+
+  @override
+  State<BibleWordsApp> createState() => _BibleWordsAppState();
+}
+
+class _BibleWordsAppState extends State<BibleWordsApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      MusicService.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      MusicService.resume();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,3 +81,4 @@ class BibleWordsApp extends StatelessWidget {
     );
   }
 }
+

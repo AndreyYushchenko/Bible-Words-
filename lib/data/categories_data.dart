@@ -2,6 +2,49 @@ import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../models/level.dart';
 
+/// Builds a crossword out of one vertical "spine" word plus any number of
+/// horizontal words that each cross it at one shared letter. Each crosser is
+/// `(word, spineIndex, wordIndex)`: the letter at `word[wordIndex]` must equal
+/// `spine[spineIndex]` — that's the one thing to get right by hand, the row/
+/// column placement and the wheel's letter counts (including a letter that
+/// appears twice in one word, like the two Д in ДАВИД) are derived from it.
+Level _buildLevel({
+  required String id,
+  required int number,
+  required String spine,
+  List<(String word, int spineIndex, int wordIndex)> crossers = const [],
+  List<String> bonusWords = const [],
+}) {
+  final spineCol = crossers.isEmpty ? 0 : crossers.map((c) => c.$3).reduce((a, b) => a > b ? a : b);
+  final words = <PuzzleWord>[
+    PuzzleWord(answer: spine, row: 0, col: spineCol, direction: WordDirection.vertical),
+    for (final c in crossers)
+      PuzzleWord(answer: c.$1, row: c.$2, col: spineCol - c.$3, direction: WordDirection.horizontal),
+  ];
+
+  final letterCounts = <String, int>{};
+  for (final word in [spine, ...crossers.map((c) => c.$1)]) {
+    final counts = <String, int>{};
+    for (final ch in word.split('')) {
+      counts[ch] = (counts[ch] ?? 0) + 1;
+    }
+    counts.forEach((ch, count) {
+      if (count > (letterCounts[ch] ?? 0)) letterCounts[ch] = count;
+    });
+  }
+  final wheelLetters = <String>[for (final entry in letterCounts.entries) for (var i = 0; i < entry.value; i++) entry.key];
+
+  return Level(
+    id: id,
+    categoryId: 'names',
+    number: number,
+    unlocked: false,
+    words: words,
+    wheelLetters: wheelLetters,
+    bonusWords: bonusWords,
+  );
+}
+
 const namesCategory = Category(
   id: 'names',
   name: 'Імена людей',
@@ -19,8 +62,9 @@ final categories = <Category>[
   const Category(id: 'words', name: 'Біблійні слова', icon: Icons.auto_awesome_rounded, totalLevels: 50, unlocked: false),
 ];
 
-/// The 7 real, playable levels for "Імена людей". Levels 8-50 are shown
-/// locked in the level-select grid — no real content authored for them yet.
+/// The 17 real, playable levels for "Імена людей" (several are 3-word
+/// crosswords via `_buildLevel`'s spine+crossers pattern). Levels 18-50 are
+/// shown locked in the level-select grid — no real content authored yet.
 final List<Level> namesLevels = [
   Level(
     id: 'names-1',
@@ -106,6 +150,72 @@ final List<Level> namesLevels = [
     ],
     wheelLetters: const ['А', 'С', 'И', 'Р', 'І', 'К'],
     bonusWords: const ['РИС'],
+  ),
+  _buildLevel(
+    id: 'names-8',
+    number: 8,
+    spine: 'ЙОСИП',
+    crossers: const [('САУЛ', 2, 0)],
+  ),
+  _buildLevel(
+    id: 'names-9',
+    number: 9,
+    spine: 'РУВИМ',
+    crossers: const [('ВІЛ', 2, 0), ('СУД', 1, 1)],
+    bonusWords: const ['ЛІС'],
+  ),
+  _buildLevel(
+    id: 'names-10',
+    number: 10,
+    spine: 'СИМЕОН',
+    crossers: const [('ОСА', 4, 0), ('СОМ', 0, 0)],
+  ),
+  _buildLevel(
+    id: 'names-11',
+    number: 11,
+    spine: 'ЛЕВІЙ',
+    crossers: const [('ЛІС', 0, 0), ('ВІЛ', 2, 0)],
+    bonusWords: const ['ЛЕВ'],
+  ),
+  _buildLevel(
+    id: 'names-12',
+    number: 12,
+    spine: 'ЗАВУЛОН',
+    crossers: const [('САД', 1, 1), ('СУД', 3, 1)],
+    bonusWords: const ['ЗАЛ'],
+  ),
+  _buildLevel(
+    id: 'names-13',
+    number: 13,
+    spine: 'ІСАЯ',
+    crossers: const [('САД', 1, 0), ('МАК', 2, 1)],
+    bonusWords: const ['ДІМ'],
+  ),
+  _buildLevel(
+    id: 'names-14',
+    number: 14,
+    spine: 'ІЛЛЯ',
+    crossers: const [('ЛІС', 1, 0)],
+  ),
+  _buildLevel(
+    id: 'names-15',
+    number: 15,
+    spine: 'ЛУКА',
+    crossers: const [('МАК', 3, 1)],
+    bonusWords: const ['МУЛ'],
+  ),
+  _buildLevel(
+    id: 'names-16',
+    number: 16,
+    spine: 'МАРКО',
+    crossers: const [('РАЙ', 2, 0)],
+    bonusWords: const ['РАК'],
+  ),
+  _buildLevel(
+    id: 'names-17',
+    number: 17,
+    spine: 'ХОМА',
+    crossers: const [('МАК', 2, 0)],
   ),
 ];
 
