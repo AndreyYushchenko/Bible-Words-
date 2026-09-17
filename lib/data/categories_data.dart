@@ -62,9 +62,9 @@ final categories = <Category>[
   const Category(id: 'words', name: 'Біблійні слова', icon: Icons.auto_awesome_rounded, totalLevels: 50, unlocked: false),
 ];
 
-/// The 17 real, playable levels for "Імена людей" (several are 3-word
-/// crosswords via `_buildLevel`'s spine+crossers pattern). Levels 18-50 are
-/// shown locked in the level-select grid — no real content authored yet.
+/// All 50 levels for "Імена людей", each a spine word (a Bible name) plus
+/// 0-2 crossers, via `_buildLevel`. Levels still unlock in order — only the
+/// first is unlocked by default, later ones open as earlier ones get stars.
 final List<Level> namesLevels = [
   Level(
     id: 'names-1',
@@ -217,6 +217,109 @@ final List<Level> namesLevels = [
     spine: 'ХОМА',
     crossers: const [('МАК', 2, 0)],
   ),
+  _buildLevel(id: 'names-18', number: 18, spine: 'АДАМ', crossers: const [('ДІМ', 1, 0)]),
+  _buildLevel(id: 'names-19', number: 19, spine: 'КАЇН', crossers: const [('МАК', 1, 1)]),
+  _buildLevel(id: 'names-20', number: 20, spine: 'АВЕЛЬ', crossers: const [('ВІЛ', 1, 0)]),
+  _buildLevel(id: 'names-21', number: 21, spine: 'СИМ', crossers: const [('САД', 0, 0)]),
+  _buildLevel(id: 'names-22', number: 22, spine: 'ХАМ', crossers: const [('МАК', 1, 1)]),
+  _buildLevel(id: 'names-23', number: 23, spine: 'ЯФЕТ'),
+  _buildLevel(id: 'names-24', number: 24, spine: 'АВРААМ', crossers: const [('РАЙ', 2, 0)]),
+  _buildLevel(id: 'names-25', number: 25, spine: 'САРА', crossers: const [('РАЙ', 2, 0)]),
+  _buildLevel(id: 'names-26', number: 26, spine: 'ІСАВ', crossers: const [('САД', 1, 0)]),
+  _buildLevel(id: 'names-27', number: 27, spine: 'РАХІЛЬ', crossers: const [('ЛІС', 4, 0)]),
+  _buildLevel(id: 'names-28', number: 28, spine: 'ЮДА', crossers: const [('ДІМ', 1, 0)]),
+  _buildLevel(
+    id: 'names-29',
+    number: 29,
+    spine: 'НЕФТАЛИМ',
+    crossers: const [('ЛІС', 5, 0), ('МАК', 4, 1)],
+  ),
+  _buildLevel(id: 'names-30', number: 30, spine: 'ІССАХАР', crossers: const [('РАЙ', 6, 0)]),
+  _buildLevel(
+    id: 'names-31',
+    number: 31,
+    spine: 'ААРОН',
+    crossers: const [('РАЙ', 2, 0), ('СОМ', 3, 1)],
+  ),
+  _buildLevel(id: 'names-32', number: 32, spine: 'МІРІАМ', crossers: const [('РАЙ', 2, 0)]),
+  _buildLevel(
+    id: 'names-33',
+    number: 33,
+    spine: 'ЙОВ',
+    crossers: const [('СОМ', 1, 1), ('ВІЛ', 2, 0)],
+  ),
+  _buildLevel(
+    id: 'names-34',
+    number: 34,
+    spine: 'ГЕДЕОН',
+    crossers: const [('ДІМ', 2, 0), ('СОМ', 4, 1)],
+  ),
+  _buildLevel(
+    id: 'names-35',
+    number: 35,
+    spine: 'САМСОН',
+    crossers: const [('САД', 0, 0), ('СОМ', 4, 1)],
+  ),
+  _buildLevel(id: 'names-36', number: 36, spine: 'РУТ', crossers: const [('РАЙ', 0, 0)]),
+  _buildLevel(id: 'names-37', number: 37, spine: 'НОЕМІ', crossers: const [('СОМ', 1, 1)]),
+  _buildLevel(
+    id: 'names-38',
+    number: 38,
+    spine: 'САМУЇЛ',
+    crossers: const [('ЛІС', 5, 0), ('САД', 0, 0)],
+  ),
+  _buildLevel(
+    id: 'names-39',
+    number: 39,
+    spine: 'СОЛОМОН',
+    crossers: const [('ЛІС', 2, 0), ('СОМ', 4, 2)],
+  ),
+  _buildLevel(id: 'names-40', number: 40, spine: 'ЙОНА', crossers: const [('СОМ', 1, 1)]),
+  _buildLevel(
+    id: 'names-41',
+    number: 41,
+    spine: 'ЄЛИСЕЙ',
+    crossers: const [('ЛІС', 1, 0), ('САД', 3, 0)],
+  ),
+  _buildLevel(
+    id: 'names-42',
+    number: 42,
+    spine: 'ДАНІЇЛ',
+    crossers: const [('ДІМ', 0, 0), ('ЛІС', 5, 0)],
+  ),
+  _buildLevel(
+    id: 'names-43',
+    number: 43,
+    spine: 'ІЄРЕМІЯ',
+    crossers: const [('РАЙ', 2, 0), ('СОМ', 4, 2)],
+  ),
+  _buildLevel(id: 'names-44', number: 44, spine: 'ІСУС', crossers: const [('САД', 1, 0)]),
+  _buildLevel(
+    id: 'names-45',
+    number: 45,
+    spine: 'МАРІЯ',
+    crossers: const [('РАЙ', 2, 0), ('МАК', 1, 1)],
+  ),
+  _buildLevel(
+    id: 'names-46',
+    number: 46,
+    spine: 'ПЕТРО',
+    crossers: const [('РАЙ', 3, 0), ('СОМ', 4, 1)],
+  ),
+  _buildLevel(
+    id: 'names-47',
+    number: 47,
+    spine: 'ПАВЛО',
+    crossers: const [('ВІЛ', 2, 0), ('ЛІС', 3, 0)],
+  ),
+  _buildLevel(id: 'names-48', number: 48, spine: 'ІВАН', crossers: const [('ВІЛ', 1, 0)]),
+  _buildLevel(
+    id: 'names-49',
+    number: 49,
+    spine: 'АНДРІЙ',
+    crossers: const [('ДІМ', 2, 0), ('РАЙ', 3, 0)],
+  ),
+  _buildLevel(id: 'names-50', number: 50, spine: 'ПИЛИП', crossers: const [('ЛІС', 2, 0)]),
 ];
 
 Category categoryById(String id) => categories.firstWhere((c) => c.id == id);
